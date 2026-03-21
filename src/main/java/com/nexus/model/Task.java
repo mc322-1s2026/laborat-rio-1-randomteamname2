@@ -6,13 +6,12 @@ import java.time.LocalDate;
 public class Task {
     // Métricas Globais (Alunos implementam a lógica de incremento/decremento)
     public static int totalTasksCreated = 0;
-    public static int totalValidationErrors = 0;
     public static int activeWorkload = 0;
 
     private static int nextId = 1;
 
-    private int id;
-    private LocalDate deadline; // Imutável após o nascimento
+    private final int id;
+    private final LocalDate deadline; // Imutável após o nascimento
     private String title;
     private TaskStatus status;
     private User owner;
@@ -37,12 +36,10 @@ public class Task {
         // TODO: Implementar lógica de proteção e atualizar activeWorkload
         // Se falhar, incrementar totalValidationErrors e lançar NexusValidationException
         if (this.getStatus() == TaskStatus.BLOCKED) {
-            totalValidationErrors++;
             throw new NexusValidationException("Task " + this.getTitle() + " está bloqueada."); 
         }
 
         if (this.getOwner() == null) {
-            totalValidationErrors++;
             throw new NexusValidationException("Task " + this.getTitle() + " não contém usuário dono."); 
         }
 
@@ -59,7 +56,6 @@ public class Task {
     public void markAsDone() {
         // TODO: Implementar lógica de proteção e atualizar activeWorkload (decrementar)
         if (this.getStatus() == TaskStatus.BLOCKED) {
-            totalValidationErrors++;
             throw new NexusValidationException("Task " + this.getTitle() + " está bloqueada."); 
         }
 
@@ -70,7 +66,6 @@ public class Task {
 
     public void setBlocked() {
         if (this.getStatus() == TaskStatus.DONE) {
-            totalValidationErrors++;
             throw new NexusValidationException("Task " + this.getTitle() + " está já está concluida e não pode ser bloqueada."); 
         }
 
