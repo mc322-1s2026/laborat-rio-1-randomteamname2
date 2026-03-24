@@ -4,6 +4,7 @@ import com.nexus.model.*;
 import com.nexus.exception.NexusValidationException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class LogProcessor {
@@ -33,11 +34,8 @@ public class LogProcessor {
                                 users.add(new User(p[1], p[2]));
                                 System.out.println("[LOG] Usuário criado: " + p[1]);
                             }
-                            case "CREATE_TASK" -> {
-                                Task t = new Task(p[1], LocalDate.parse(p[2]));
-                                workspace.addTask(t);
-                                System.out.println("[LOG] Tarefa criada: " + p[1]);
-                            }
+                            case "CREATE_TASK" -> create_task(p[1], p[2], p[3], workspace);
+                            case "CREATE_PROJECT" -> create_project(p[1], p[2], workspace);
                             default -> System.err.println("[WARN] Ação desconhecida: " + action);
                         }
                     } catch (NexusValidationException e) {
@@ -48,5 +46,36 @@ public class LogProcessor {
         } catch (IOException e) {
             System.err.println("[ERRO FATAL] " + e.getMessage());
         }
+    }
+    private void create_task(String p1, String p2, String p3, Workspace workspace){
+        LocalDate deadline;
+        int effort;
+        try{
+            deadline = LocalDate.parse(p2);
+            effort = Integer.parseInt(p3);
+        }
+        catch(DateTimeParseException e){
+            throw new NexusValidationException("Data inválida.");
+        }
+        catch(NumberFormatException e){
+            throw new NexusValidationException("Tempo necessário inválido.");
+        }
+        boolean exists = workspace.getTasks().stream().filter(t->t.getTitle().equals(p1)).findFirst().isPresent(); 
+        if(p1.isBlank() || p1.isEmpty() || exists){
+            throw new NexusValidationException("Nome inválido");
+        }
+        
+        Task t = new Task(p1, deadline, effort);
+        workspace.addTask(t);
+        System.out.println("[LOG] Tarefa criada: " + p1);
+    }
+
+    private void create_project(String p1, String p2, Workspace workspace){
+        boolean exists = workspace.getTasks().stream().filter(t->t.getTitle().equals(p1)).findFirst().isPresent(); 
+        if(p1.isBlank() || p1.isEmpty() || exists){
+            throw new NexusValidationException("Nome inválido");
+        }
+
+        
     }
 }
