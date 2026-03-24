@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-//teste commit
-
 public class LogProcessor {
 
     public void processLog(String fileName, Workspace workspace, List<User> users) {
