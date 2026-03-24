@@ -8,6 +8,12 @@ public class User {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username não pode ser vazio.");
         }
+
+        //Validação de email
+        if (!email.contains("@") && !email.contains(".com") && !(email == null || email.isBlank())){
+            throw new IllegalArgumentException("Email inválido");
+        }
+
         this.username = username;
         this.email = email;
     }
@@ -21,6 +27,7 @@ public class User {
     }
 
     public long calculateWorkload() {
+        consultUsername();
         return 0; 
     }
 }
