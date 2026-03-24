@@ -11,12 +11,18 @@ public class Task {
     private static int nextId = 1;
 
     private final int id;
-    private final LocalDate deadline; // Imutável após o nascimento
+    private final LocalDate deadline;
     private String title;
     private TaskStatus status;
     private User owner;
     private int estimatedEffort;
 
+    /**
+     * Constutor da classe Task;
+     * @param title         Título da tarefa
+     * @param deadline      Prazo de entrega da tarefa
+     * @param effort        Tempo estimado a ser gasto na tarefa
+     */
     public Task(String title, LocalDate deadline, int effort) {
         this.id = nextId++;
         this.deadline = deadline;
@@ -30,7 +36,8 @@ public class Task {
 
     /**
      * Move a tarefa para IN_PROGRESS.
-     * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
+     * Só é possível se houver um owner atribuído e não estiver BLOCKED.
+     * @throws NexusValidationException Joga uma excessão se a tarefa não puder mudar para IN_PROGRESS
      */
     public void moveToInProgrers() {
         
@@ -53,6 +60,7 @@ public class Task {
     /**
      * Finaliza a tarefa.
      * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
+     * @throws NexusValidationException Joga uma excessão se a tarefa estiver bloqueada.
      */
     public void markAsDone() {
         
@@ -65,6 +73,12 @@ public class Task {
         status = TaskStatus.DONE;
     }
 
+    /**
+     * Bloqueia a tarefa.
+     * Regra: Só pode ser movida para BLOCKED se não estiver DONE.
+     * @throws NexusValidationException Joga uma excessão se a tarefa estiver concluída.
+     * Se a tarefa a ser bloqueada estiver em progresso, diminui o activeWorkload.
+     */
     public void setBlocked() {
         if (getStatus().equals(TaskStatus.DONE)) {
             throw new NexusValidationException("Task " + getTitle() + " está já está concluida e não pode ser bloqueada."); 
