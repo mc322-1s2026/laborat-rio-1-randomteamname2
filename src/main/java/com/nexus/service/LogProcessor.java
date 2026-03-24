@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 //TODO: fazer o parsing dos inputs e os switch cases
 //TODO: tratamento de erro (completar as mudanças do arantes)
@@ -36,8 +37,8 @@ public class LogProcessor {
                             case "CREATE_USER" -> create_user(p[1], p[2], users);
                             case "CREATE_TASK" -> create_task(p[1], p[2], p[3], workspace);
                             case "CREATE_PROJECT" -> create_project(p[1], p[2], workspace);
-                            case "ASSIGN_USER" -> assign_user(p[1], p[2]);
-                            case "CHANGE_STATUS" -> change_status(p[1], p[2], p[3]);
+                            case "ASSIGN_USER" -> assign_user(p[1], p[2], users, workspace);
+                            case "CHANGE_STATUS" -> change_status(p[1], p[2], workspace);
                             case "REPORT_STATUS" -> report_status();
                             default -> System.err.println("[WARN] Ação desconhecida: " + action);
                         }
@@ -103,11 +104,41 @@ public class LogProcessor {
         User u;
         try{
             taskId = Integer.parseInt(p2);
-            users.stream().filter(u-> u.get)
+            u = users.stream().filter(u->u.getUsername().equals(p1)).findFirst().get();
+        }
+        catch(NoSuchElementException e){
+            throw new NexusValidationException("Usuário não existe.")
         }
         catch(NumberFormatException e){
             throw new NexusValidationException("ID inválido");
         }
-        workspace.getTaskById(taskId).setOwner(u)
+        workspace.getTaskById(taskId).setOwner(u);
+        System.out.println("[LOG] Usuário " + p1 + " atribuído como dono da tarefa " + taskId);
     }
+
+    private void change_status(String p1, String p2, Workspace workspace){
+        int taskId;
+        try{
+            taskId = Integer.parseInt(p1);
+        }
+        catch(NumberFormatException e){
+            throw new NexusValidationException("ID inválido.");
+        }
+        Task t = workspace.getTaskById(taskId);
+        switch (p2) {
+            case "IN_PROGRESS":
+                t.moveToInProgrers();
+                break;
+            case "DONE":
+                t.markAsDone();
+                break;
+            case "BLOCKED":
+                t.setBlocked();
+                break;
+            case "TO_DO":
+                throw new NexusValidationException("Não possível alterar o estado da tarefa para TO_DO.");
+            default:
+                throw new NexusValidationException("Status inválido.");
+        }
+    } 
 }
