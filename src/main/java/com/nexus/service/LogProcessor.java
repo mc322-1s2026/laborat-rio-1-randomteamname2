@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+//TODO: fazer o parsing dos inputs e os switch cases
+//TODO: tratamento de erro (completar as mudanças do arantes)
+
 public class LogProcessor {
 
     public void processLog(String fileName, Workspace workspace, List<User> users) {
