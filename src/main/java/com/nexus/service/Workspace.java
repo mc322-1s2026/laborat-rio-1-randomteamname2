@@ -25,9 +25,9 @@ public class Workspace {
         return Collections.unmodifiableList(tasks);
     }
 
-    public List<Task> getProjects() {
+    public List<Project> getProjects() {
         // Retorna uma visão não modificável para garantir encapsulamento
-        return Collections.unmodifiableList(tasks);
+        return Collections.unmodifiableList(projects);
     }
 
     public Task getTaskById(int id) {
