@@ -30,12 +30,12 @@ public class LogProcessor {
 
                     try {
                         switch (action) {
-                            case "CREATE_USER" -> {
-                                users.add(new User(p[1], p[2]));
-                                System.out.println("[LOG] Usuário criado: " + p[1]);
-                            }
+                            case "CREATE_USER" -> create_user(p[1], p[2], users);
                             case "CREATE_TASK" -> create_task(p[1], p[2], p[3], workspace);
                             case "CREATE_PROJECT" -> create_project(p[1], p[2], workspace);
+                            case "ASSIGN_USER" -> assign_user(p[1], p[2]);
+                            case "CHANGE_STATUS" -> change_status(p[1], p[2], p[3]);
+                            case "REPORT_STATUS" -> report_status();
                             default -> System.err.println("[WARN] Ação desconhecida: " + action);
                         }
                     } catch (NexusValidationException e) {
@@ -50,6 +50,10 @@ public class LogProcessor {
     private void create_task(String p1, String p2, String p3, Workspace workspace){
         LocalDate deadline;
         int effort;
+        boolean exists = workspace.getTasks().stream().filter(t->t.getTitle().equals(p1)).findFirst().isPresent(); 
+        if(p1.isBlank() || p1.isEmpty() || exists){
+            throw new NexusValidationException("Nome inválido");
+        }
         try{
             deadline = LocalDate.parse(p2);
             effort = Integer.parseInt(p3);
@@ -60,10 +64,6 @@ public class LogProcessor {
         catch(NumberFormatException e){
             throw new NexusValidationException("Tempo necessário inválido.");
         }
-        boolean exists = workspace.getTasks().stream().filter(t->t.getTitle().equals(p1)).findFirst().isPresent(); 
-        if(p1.isBlank() || p1.isEmpty() || exists){
-            throw new NexusValidationException("Nome inválido");
-        }
         
         Task t = new Task(p1, deadline, effort);
         workspace.addTask(t);
@@ -71,11 +71,40 @@ public class LogProcessor {
     }
 
     private void create_project(String p1, String p2, Workspace workspace){
-        boolean exists = workspace.getTasks().stream().filter(t->t.getTitle().equals(p1)).findFirst().isPresent(); 
+        int budget;
+        boolean exists = workspace.getProjects().stream().filter(t->t.getName().equals(p1)).findFirst().isPresent(); 
         if(p1.isBlank() || p1.isEmpty() || exists){
             throw new NexusValidationException("Nome inválido");
         }
+        try{
+            budget = Integer.parseInt(p2);
+        }
+        catch(NumberFormatException e){
+            throw new NexusValidationException("Orçamento inválido.")
+        }
+        Project p = new Project(p1, budget);
+        workspace.addProject(p);
+        System.out.println("[LOG] Projeto criado: " + p1);
+    }
 
-        
+    private void create_user(String p1, String p2, List<User> users){
+        users.stream().filter()
+
+        User u = new User(p1, p2);
+        users.add(u);
+        System.out.println("[LOG] Usuário criado: " + p1);
+    }
+
+    private void assign_owner(String p1, String p2, List<User> users, Workspace workspace){
+        int taskId;
+        User u;
+        try{
+            taskId = Integer.parseInt(p2);
+            users.stream().filter(u-> u.get)
+        }
+        catch(NumberFormatException e){
+            throw new NexusValidationException("ID inválido");
+        }
+        workspace.getTaskById(taskId).setOwner(u)
     }
 }
