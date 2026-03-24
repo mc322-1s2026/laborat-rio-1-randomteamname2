@@ -43,8 +43,4 @@ public class User {
             return Pattern.matches(EMAIL_REGEX, email);
         }
     }
-    /*private boolean verifyEmail(String email){
-        if (email == null || email.isBlank()) return 0;
-        if (email.startsWith(String))
-    }*/ //
 }
