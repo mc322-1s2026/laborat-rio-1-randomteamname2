@@ -83,4 +83,6 @@ public class Task {
     public LocalDate getDeadline() { return deadline; }
     public User getOwner() { return owner; }
     public int getEstimatedEffort() { return estimatedEffort; }
+
+    public void setOwner(User user) { owner = user; }
 }

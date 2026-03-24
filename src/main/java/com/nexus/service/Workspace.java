@@ -38,7 +38,7 @@ public class Workspace {
 
     public List<User> topPerformers() {
         return getTasks().stream()
-            .filter(task -> task.getStatus().equals(TaskStatus.DONE))
+            .filter(task -> task.getStatus().equals(TaskStatus.DONE) && task.getOwner() != null)
             .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
             .entrySet()
             .stream()
@@ -50,7 +50,7 @@ public class Workspace {
 
     public List<User> overloadedUsers() {
         return getTasks().stream()
-            .filter(task -> task.getStatus().equals(TaskStatus.IN_PROGRESS))
+            .filter(task -> task.getStatus().equals(TaskStatus.IN_PROGRESS) && task.getOwner() != null)
             .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
             .entrySet()
             .stream()
