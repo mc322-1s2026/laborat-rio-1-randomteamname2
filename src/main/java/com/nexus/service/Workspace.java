@@ -24,52 +24,52 @@ public class Workspace {
         if (id < 1 || id > tasks.size()) 
         throw new NexusValidationException("ID " + id + " inválido."); 
 
-        return this.getTasks().get(id - 1);
+        return getTasks().get(id - 1);
     }
 
     public List<User> topPerformers() {
-        return this.getTasks().stream()
-        .filter(task -> task.getStatus() == TaskStatus.DONE)
-        .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
-        .entrySet()
-        .stream()
-        .sorted(Map.Entry.comparingByValue())
-        .limit(3)
-        .map(entry -> entry.getKey())
-        .collect(Collectors.toList());
+        return getTasks().stream()
+            .filter(task -> task.getStatus().equals(TaskStatus.DONE))
+            .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
+            .entrySet()
+            .stream()
+            .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+            .limit(3)
+            .map(entry -> entry.getKey())
+            .collect(Collectors.toList());
     }
 
     public List<User> overloadedUsers() {
-        return this.getTasks().stream()
-        .filter(task -> task.getStatus() == TaskStatus.IN_PROGRESS)
-        .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
-        .entrySet()
-        .stream()
-        .filter(entry -> entry.getValue() > 10)
-        .map(entry -> entry.getKey())
-        .collect(Collectors.toList());
+        return getTasks().stream()
+            .filter(task -> task.getStatus().equals(TaskStatus.IN_PROGRESS))
+            .collect(Collectors.groupingBy(Task::getOwner, Collectors.counting()))
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue() > 10)
+            .map(entry -> entry.getKey())
+            .collect(Collectors.toList());
     }
 
 
     public List<TaskStatus> bottleneck() {
-        Long bottleneckSize = this.getTasks().stream()
-        .filter(task -> task.getStatus() != TaskStatus.DONE)
-        .collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()))
-        .entrySet()
-        .stream()
-        .mapToLong(entry -> entry.getValue())
-        .max()
-        .orElse(0);
+        Long bottleneckSize = getTasks().stream()
+            .filter(task -> !task.getStatus().equals(TaskStatus.DONE))
+            .collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()))
+            .entrySet()
+            .stream()
+            .mapToLong(entry -> entry.getValue())
+            .max()
+            .orElse(0);
 
         if (bottleneckSize == 0) return null;
 
-        return this.getTasks().stream()
-        .filter(task -> task.getStatus() != TaskStatus.DONE)
-        .collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()))
-        .entrySet()
-        .stream()
-        .filter(entry -> entry.getValue() == bottleneckSize)
-        .map(entry -> entry.getKey())
-        .collect(Collectors.toList());
+        return getTasks().stream()
+            .filter(task -> task.getStatus().equals(TaskStatus.DONE))
+            .collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()))
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().equals(bottleneckSize))
+            .map(entry -> entry.getKey())
+            .collect(Collectors.toList());
     }
 }

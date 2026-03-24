@@ -35,18 +35,18 @@ public class Task {
     public void moveToInProgrers() {
         // TODO: Implementar lógica de proteção e atualizar activeWorkload
         // Se falhar, incrementar totalValidationErrors e lançar NexusValidationException
-        if (this.getStatus() == TaskStatus.BLOCKED) {
-            throw new NexusValidationException("Task " + this.getTitle() + " está bloqueada."); 
+        if (getStatus().equals(TaskStatus.BLOCKED)) {
+            throw new NexusValidationException("Task " + getTitle() + " está bloqueada."); 
         }
 
-        if (this.getOwner() == null) {
-            throw new NexusValidationException("Task " + this.getTitle() + " não contém usuário dono."); 
+        if (getOwner() == null) {
+            throw new NexusValidationException("Task " + getTitle() + " não contém usuário dono."); 
         }
 
-        if (this.getStatus() == TaskStatus.IN_PROGRESS) return; 
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) return; 
 
         activeWorkload++;
-        this.status = TaskStatus.IN_PROGRESS;
+        status = TaskStatus.IN_PROGRESS;
     }
 
     /**
@@ -55,23 +55,23 @@ public class Task {
      */
     public void markAsDone() {
         // TODO: Implementar lógica de proteção e atualizar activeWorkload (decrementar)
-        if (this.getStatus() == TaskStatus.BLOCKED) {
-            throw new NexusValidationException("Task " + this.getTitle() + " está bloqueada."); 
+        if (getStatus().equals(TaskStatus.BLOCKED)) {
+            throw new NexusValidationException("Task " + getTitle() + " está bloqueada."); 
         }
 
-        if (this.getStatus() == TaskStatus.IN_PROGRESS) activeWorkload--;
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) activeWorkload--;
 
-        this.status = TaskStatus.DONE;
+        status = TaskStatus.DONE;
     }
 
     public void setBlocked() {
-        if (this.getStatus() == TaskStatus.DONE) {
-            throw new NexusValidationException("Task " + this.getTitle() + " está já está concluida e não pode ser bloqueada."); 
+        if (getStatus().equals(TaskStatus.DONE)) {
+            throw new NexusValidationException("Task " + getTitle() + " está já está concluida e não pode ser bloqueada."); 
         }
 
-        if (this.getStatus() == TaskStatus.IN_PROGRESS) activeWorkload--;
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) activeWorkload--;
 
-        this.status = TaskStatus.BLOCKED;
+        status = TaskStatus.BLOCKED;
     }
 
     // Getters
