@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+//TODO: fazer o parsing dos inputs e os switch cases
+//TODO: tratamento de erro (completar as mudanças do arantes)
+
 public class LogProcessor {
 
     public void processLog(String fileName, Workspace workspace, List<User> users) {
@@ -95,7 +98,7 @@ public class LogProcessor {
         System.out.println("[LOG] Usuário criado: " + p1);
     }
 
-    private void assign_owner(String p1, String p2, List<User> users, Workspace workspace){
+    private void assign_user(String p1, String p2, List<User> users, Workspace workspace){
         int taskId;
         User u;
         try{
