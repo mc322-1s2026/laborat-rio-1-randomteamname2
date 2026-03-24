@@ -13,5 +13,5 @@ public class NexusValidationException extends RuntimeException {
     }
 
     // Getters
-    public int getTotalValidationErrors() { return totalValidationErrors; }
+    public static int getTotalValidationErrors() { return totalValidationErrors; }
 }
