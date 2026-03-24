@@ -39,7 +39,7 @@ public class LogProcessor {
                             case "CREATE_PROJECT" -> create_project(p[1], p[2], workspace);
                             case "ASSIGN_USER" -> assign_user(p[1], p[2], users, workspace);
                             case "CHANGE_STATUS" -> change_status(p[1], p[2], workspace);
-                            case "REPORT_STATUS" -> report_status();
+                            case "REPORT_STATUS" -> report_status(workspace);
                             default -> System.err.println("[WARN] Ação desconhecida: " + action);
                         }
                     } catch (NexusValidationException e) {
@@ -84,7 +84,7 @@ public class LogProcessor {
             budget = Integer.parseInt(p2);
         }
         catch(NumberFormatException e){
-            throw new NexusValidationException("Orçamento inválido.")
+            throw new NexusValidationException("Orçamento inválido.");
         }
         Project p = new Project(p1, budget);
         workspace.addProject(p);
@@ -92,7 +92,9 @@ public class LogProcessor {
     }
 
     private void create_user(String p1, String p2, List<User> users){
-        users.stream().filter()
+        if(users.stream().filter(u->u.getUsername().equals(p1)).findFirst().isPresent()){
+            throw new NexusValidationException("O usuário já existe.");
+        }
 
         User u = new User(p1, p2);
         users.add(u);
@@ -104,10 +106,10 @@ public class LogProcessor {
         User u;
         try{
             taskId = Integer.parseInt(p2);
-            u = users.stream().filter(u->u.getUsername().equals(p1)).findFirst().get();
+            u = users.stream().filter(u_->u_.getUsername().equals(p1)).findFirst().get();
         }
         catch(NoSuchElementException e){
-            throw new NexusValidationException("Usuário não existe.")
+            throw new NexusValidationException("Usuário não existe.");
         }
         catch(NumberFormatException e){
             throw new NexusValidationException("ID inválido");
@@ -141,4 +143,19 @@ public class LogProcessor {
                 throw new NexusValidationException("Status inválido.");
         }
     } 
+    private void report_status(Workspace workspace){
+        System.out.println("Os 3 melhores usuários são: ");
+        workspace.topPerformers().stream().map(u->u.getUsername()).forEach(System.out::println);
+        
+        //Overloaded Users
+        System.out.println("");
+        System.out.println("Os usuários sobrecarregados são: ");
+        workspace.overloadedUsers().stream().map(u->u.getUsername()).forEach(System.out::println);
+
+        //Bottleneck
+        List<TaskStatus> l = workspace.bottleneck();
+        System.out.println("");
+        System.out.println("As tarefas mais : ");
+        l.stream().forEach(System.out::println);
+    }
 }
