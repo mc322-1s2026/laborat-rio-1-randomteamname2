@@ -9,14 +9,24 @@ import java.util.stream.Collectors;
 
 public class Workspace {
     private final List<Task> tasks = new ArrayList<>();
+    private final List<Project> projects = new ArrayList<>();
 
     public void addTask(Task task) {
         tasks.add(task);
     }
 
+    public void addProject(Project project) {
+        projects.add(project);
+    }
+
     public List<Task> getTasks() {
         // Retorna uma visão não modificável para garantir encapsulamento
         return Collections.unmodifiableList(tasks);
+    }
+
+    public List<Project> getProjects() {
+        // Retorna uma visão não modificável para garantir encapsulamento
+        return Collections.unmodifiableList(projects);
     }
 
     public Task getTaskById(int id) {
