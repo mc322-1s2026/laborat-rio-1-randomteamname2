@@ -1,26 +1,28 @@
 package com.nexus.model;
 
+import com.nexus.exception.NexusValidationException;
 import java.time.LocalDate;
 
 public class Task {
     // Métricas Globais (Alunos implementam a lógica de incremento/decremento)
     public static int totalTasksCreated = 0;
-    public static int totalValidationErrors = 0;
     public static int activeWorkload = 0;
 
     private static int nextId = 1;
 
-    private int id;
-    private LocalDate deadline; // Imutável após o nascimento
+    private final int id;
+    private final LocalDate deadline; // Imutável após o nascimento
     private String title;
     private TaskStatus status;
     private User owner;
+    private int estimatedEffort;
 
-    public Task(String title, LocalDate deadline) {
+    public Task(String title, LocalDate deadline, int effort) {
         this.id = nextId++;
         this.deadline = deadline;
         this.title = title;
         this.status = TaskStatus.TO_DO;
+        this.estimatedEffort = effort;
         
         // Ação do Aluno:
         totalTasksCreated++; 
@@ -30,9 +32,22 @@ public class Task {
      * Move a tarefa para IN_PROGRESS.
      * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
      */
-    public void moveToInProgress(User user) {
-        // TODO: Implementar lógica de proteção e atualizar activeWorkload
+    public void moveToInProgrers() {
+        
         // Se falhar, incrementar totalValidationErrors e lançar NexusValidationException
+        if (getStatus().equals(TaskStatus.BLOCKED)) {
+            throw new NexusValidationException("Task " + getTitle() + " está bloqueada."); 
+        }
+
+        if (getOwner() == null) {
+            throw new NexusValidationException("Task " + getTitle() + " não contém usuário dono."); 
+        }
+
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) return; 
+
+        activeWorkload++;
+        status = TaskStatus.IN_PROGRESS;
+
     }
 
     /**
@@ -40,15 +55,25 @@ public class Task {
      * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
      */
     public void markAsDone() {
-        // TODO: Implementar lógica de proteção e atualizar activeWorkload (decrementar)
+        
+        if (getStatus().equals(TaskStatus.BLOCKED)) {
+            throw new NexusValidationException("Task " + getTitle() + " está bloqueada."); 
+        }
+
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) activeWorkload--;
+
+        status = TaskStatus.DONE;
     }
 
-    public void setBlocked(boolean blocked) {
-        if (blocked) {
-            this.status = TaskStatus.BLOCKED;
-        } else {
-            this.status = TaskStatus.TO_DO; // Simplificação para o Lab
+    public void setBlocked() {
+        if (getStatus().equals(TaskStatus.DONE)) {
+            throw new NexusValidationException("Task " + getTitle() + " está já está concluida e não pode ser bloqueada."); 
         }
+
+        if (getStatus().equals(TaskStatus.IN_PROGRESS)) activeWorkload--;
+
+        status = TaskStatus.BLOCKED;
+
     }
 
     // Getters
@@ -57,4 +82,5 @@ public class Task {
     public String getTitle() { return title; }
     public LocalDate getDeadline() { return deadline; }
     public User getOwner() { return owner; }
+    public int getEstimatedEffort() { return estimatedEffort; }
 }

@@ -90,7 +90,7 @@ public class Main {
 
             User newUser = new User(username, email);
             users.add(newUser);
-            System.out.println("[OK] Usuário cadastrado.");
+            System.out.println("[OK] Usuário " + username + " cadastrado.");
         } catch (NexusValidationException e) {
             System.err.println("[ERRO] " + e.getMessage());
         }
@@ -107,12 +107,16 @@ public class Main {
             String title = scanner.nextLine();
             System.out.print("Prazo (AAAA-MM-DD): ");
             LocalDate deadline = LocalDate.parse(scanner.nextLine());
+            System.out.print("Tempo necessário (em horas): ");
+            int estimatedEffort = Integer.parseInt(scanner.nextLine());
 
-            Task newTask = new Task(title, deadline);
+            Task newTask = new Task(title, deadline, estimatedEffort);
             workspace.addTask(newTask);
-            System.out.println("[OK] Tarefa adicionada ao backlog.");
+            System.out.println("[OK] Tarefa " + title + " adicionada ao backlog.");
         } catch (DateTimeParseException e) {
             System.err.println("[ERRO] Formato de data inválido. Use AAAA-MM-DD.");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERRO] Formato de tempo necessário inválido. Insira um número inteiro.");
         }
     }
 
@@ -128,17 +132,18 @@ public class Main {
             return;
         }
 
-        String header = "+----+----------------------+-------------+------------+";
+        String header = "+----+----------------------+-------------+------------+----------------+";
         System.out.println("\n" + header);
-        System.out.printf("| %-2s | %-20s | %-11s | %-10s |%n", "ID", "TÍTULO", "STATUS", "DEADLINE");
+        System.out.printf("| %-2s | %-20s | %-11s | %-10s | %-14s |%n", "ID", "TÍTULO", "STATUS", "DEADLINE", "TEMPO ESPERADO");
         System.out.println(header);
 
         for (Task t : tasks) {
-            System.out.printf("| %-2d | %-20s | %-11s | %-10s |%n",
-                    t.getId(),
-                    truncar(t.getTitle(), 20),
-                    t.getStatus(),
-                    t.getDeadline());
+            System.out.printf("| %-2d | %-20s | %-11s | %-10s | %-14d |%n",
+                t.getId(),
+                truncar(t.getTitle(), 20),
+                t.getStatus(),
+                t.getDeadline(),
+                t.getEstimatedEffort());
         }
         System.out.println(header);
         System.out.println("Total de tarefas: " + Task.totalTasksCreated);
